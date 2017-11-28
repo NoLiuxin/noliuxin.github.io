@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="基础类1 ARC下的assign和weak区别weak 比 assign 多了一个功能就是当属性所指向的对象消失的时（也就是内存引用计数为0）会自动赋值为 nil ，这样再向 weak 修饰的属性发送消息就不会导致野指针操作crash。 结论：在 ARC 模式下编程时，指针变量一定要用 weak 修饰，只有基本数据类型">
+<meta name="keywords" content="面试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面试问题总结">
+<meta property="og:url" content="http://www.521ios.com/2017/11/28/面试问题总结/index.html">
+<meta property="og:site_name" content="你的激情被狗吃了吗">
+<meta property="og:description" content="基础类1 ARC下的assign和weak区别weak 比 assign 多了一个功能就是当属性所指向的对象消失的时（也就是内存引用计数为0）会自动赋值为 nil ，这样再向 weak 修饰的属性发送消息就不会导致野指针操作crash。 结论：在 ARC 模式下编程时，指针变量一定要用 weak 修饰，只有基本数据类型和结构体需要用 assgin ，例如 delegate ，一定要用 weak 修">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-28T05:51:39.506Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面试问题总结">
+<meta name="twitter:description" content="基础类1 ARC下的assign和weak区别weak 比 assign 多了一个功能就是当属性所指向的对象消失的时（也就是内存引用计数为0）会自动赋值为 nil ，这样再向 weak 修饰的属性发送消息就不会导致野指针操作crash。 结论：在 ARC 模式下编程时，指针变量一定要用 weak 修饰，只有基本数据类型和结构体需要用 assgin ，例如 delegate ，一定要用 weak 修">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.521ios.com/2017/11/28/面试问题总结/"/>
+
+
+
+
+
+  <title>面试问题总结 | 你的激情被狗吃了吗</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">你的激情被狗吃了吗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">编程如逆水行舟，不进则退</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'F5xiKFBwG7sVaW7jqsDZ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/11/28/面试问题总结/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuXin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="你的激情被狗吃了吗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">面试问题总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-28T12:03:10+08:00">
+                2017-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/11/28/面试问题总结/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/28/面试问题总结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="基础类"><a href="#基础类" class="headerlink" title="基础类"></a>基础类</h2><h3 id="1-ARC下的assign和weak区别"><a href="#1-ARC下的assign和weak区别" class="headerlink" title="1 ARC下的assign和weak区别"></a>1 ARC下的assign和weak区别</h3><p>weak 比 assign 多了一个功能就是当属性所指向的对象消失的时（也就是内存引用计数为0）会自动赋值为 nil ，这样再向 weak 修饰的属性发送消息就不会导致野指针操作crash。</p>
+<p>结论：在 ARC 模式下编程时，指针变量一定要用 weak 修饰，只有基本数据类型和结构体需要用 assgin ，例如 delegate ，一定要用 weak 修饰。</p>
+<a id="more"></a>
+<h3 id="2-NSString到底使用Copy还是使用Strong属性，有什么区别"><a href="#2-NSString到底使用Copy还是使用Strong属性，有什么区别" class="headerlink" title="2 NSString到底使用Copy还是使用Strong属性，有什么区别"></a>2 NSString到底使用Copy还是使用Strong属性，有什么区别</h3><p>首先分别定义这个两个属性 NSString</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic,strong)NSString  *strongStr;</span><br><span class="line">@property (nonatomic,copy  )NSString  *copyssStr;</span><br></pre></td></tr></table></figure>
+<p>然后声明一个NSMutableString对象，给这两个属性对象赋值，分别输出他们的指针和内存地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">NSMutableString *string = [NSMutableString stringWithFormat:@&quot;测试文字&quot;];</span><br><span class="line">self.strongStr = string;</span><br><span class="line">self.copyssStr = string;</span><br><span class="line">NSLog(@&quot;测试文字   String: %p, %p&quot;, string, &amp;string);</span><br><span class="line">NSLog(@&quot;Strong属性 String: %p, %p&quot;,_strongStr, &amp;_strongStr);</span><br><span class="line">NSLog(@&quot;Copy  属性 String: %p, %p&quot;,_copyssStr, &amp;_copyssStr);</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">测试文字   String: 0x7f892bf29760, 0x7fff592ca6d8</span><br><span class="line">Strong属性 String: 0x7f892bf29760, 0x7f892bc42480</span><br><span class="line">Copy  属性 String: 0x7f892be7d2f0, 0x7f892bc42488</span><br></pre></td></tr></table></figure>
+<p>此时Copy属性字符串已不再指向原来String对象，而是深拷贝了String字符串,且copyssString对象指向这个字符串。</p>
+<p>在MRC环境下，输出两者的引用计数，可以看到String对象的引用计数是2，而copyssString对象的引用计数是1。如果去修改String字符串的话，可以看到：因为strongString与原始String是指向同一对象，所以strongString的值也会跟随着改变(此时strongString的类型实际上是NSMutableString，而不是NSString)；而copyssString是指向另一个对象，并不会改变。</p>
+<p>结论：Strong属性只是增加了原字符串的引用计数，而Copy属性则是对原字符串做了次深拷贝，产生一个新的对象，且Copy属性对象指向这个新的对象,且这个Copy属性对象的类型始终是NSString，而不是NSMutableString，因此其是不可变的。所以，在声明NSString属性时，到底是选择strong还是copy，可以根据实际情况来定。不过，一般我们将对象声明为NSString时，都不希望它改变，所以大多数情况下，我们建议用copy，以免因可变字符串的修改导致的一些非预期问题。</p>
+<h3 id="3-block为什么要用copy"><a href="#3-block为什么要用copy" class="headerlink" title="3 block为什么要用copy?"></a>3 block为什么要用copy?</h3><p>首先, block是一个对象, 所以block理论上是可以retain/release的. 但是block在创建的时候它的内存是默认是分配在栈(stack)上, 而不是堆(heap)上的. 所以它的作用域仅限创建时候的当前上下文(函数, 方法…), 当你在该作用域外调用该block时, 程序就会崩溃.</p>
+<p>意思就是 : 一般情况下你不需要自行调用copy或者retain一个block. 只有当你需要在block定义域以外的地方使用时才需要copy. Copy将block从内存栈区移到堆区.</p>
+<p>其实block使用copy是MRC留下来的也算是一个传统吧, 在MRC下, 如上述, 在方法中的block创建在栈区, 使用copy就能把他放到堆区, 这样在作用域外调用该block程序就不会崩溃. 但在ARC下, 使用copy与strong其实都一样, 因为block的retain就是用copy来实现的, 所以block使用copy还能装装逼, 说明自己是从MRC下走过来的..嘿嘿</p>
+<h3 id="4-如何让自定义对象支持-copy-操作？"><a href="#4-如何让自定义对象支持-copy-操作？" class="headerlink" title="4 如何让自定义对象支持 copy 操作？"></a>4 如何让自定义对象支持 copy 操作？</h3><p>需要让自定义类实现 NSCopying 协议，该协议只有一个方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (id)copyWithZone:(nullable NSZone *)zone;</span><br></pre></td></tr></table></figure>
+<p>假如我们想让自定义对象支持 mutableCopy 操作，那又应该怎么操作呢?这需要自定义对象遵循 NSMutableCopying 协议, 该协议也只有一个方法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (id)mutableCopyWithZone:(nullable NSZone *)zone;</span><br></pre></td></tr></table></figure>
+<h3 id="5-Delegate，Notification，KVO优缺点"><a href="#5-Delegate，Notification，KVO优缺点" class="headerlink" title="5 Delegate，Notification，KVO优缺点"></a>5 Delegate，Notification，KVO优缺点</h3><p>delegate的优势：</p>
+<p>1.很严格的语法，所有能响应的时间必须在协议中有清晰的定义</p>
+<p>2.因为有严格的语法，所以编译器能帮你检查是否实现了所有应该实现的方法，不容易遗忘和出错</p>
+<p>3.使用delegate的时候，逻辑很清楚，控制流程可跟踪和识别</p>
+<p>4.在一个controller中可以定义多个协议，每个协议有不同的delegate</p>
+<p>5.没有第三方要求保持/监视通信过程，所以假如出了问题，那我们可以比较方便的定位错误代码。</p>
+<p>6.能够接受调用的协议方法的返回值，意味着delegate能够提供反馈信息给controller</p>
+<p>delegate的缺点：</p>
+<p>需要写的代码比较多</p>
+<p>notification的优势：</p>
+<p>1.不需要写多少代码，实现比较简单</p>
+<p>2.一个对象发出的通知，多个对象能进行反应，一对多的方式实现很简单</p>
+<p>缺点：</p>
+<p>1.编译期不会接茬通知是否能被正确处理</p>
+<p>2.释放注册的对象时候，需要在通知中心取消注册</p>
+<p>3.调试的时候，程序的工作以及控制流程难跟踪</p>
+<p>4.需要第三方来管理controller和观察者的联系</p>
+<p>5.controller和观察者需要提前知道通知名称、UserInfo dictionary keys。如果这些没有在工作区间定义，那么会出现不同步的情况</p>
+<p>6.通知发出后，发出通知的对象不能从观察者获得任何反馈。</p>
+<p>KVO是一个对象能观察另一个对象属性的值，前两种模式更适合一个controller和其他的对象进行通信，而KVO适合任何对象监听另一个对象的改变，这是一个对象与另外一个对象保持同步的一种方法。KVO只能对属性做出反应，不会用来对方法或者动作做出反应。</p>
+<p>优点：</p>
+<p>1.提供一个简单地方法来实现两个对象的同步</p>
+<p>2.能对非我们创建的对象做出反应</p>
+<p>3.能够提供观察的属性的最新值和先前值</p>
+<p>4.用keypaths 来观察属性，因此也可以观察嵌套对象</p>
+<p>缺点：</p>
+<p>1.观察的属性必须使用string来定义，因此编译器不会出现警告和检查</p>
+<p>2.对属性的重构将导致观察不可用</p>
+<p>3.复杂的“if”语句要求对象正在观察多个值，这是因为所有的观察都通过一个方法来指向</p>
+<h3 id="6-block的-block和weakSelf-StrongSelf"><a href="#6-block的-block和weakSelf-StrongSelf" class="headerlink" title="6 block的__block和weakSelf,StrongSelf"></a>6 block的<code>__block</code>和<code>weakSelf</code>,<code>StrongSelf</code></h3><p><code>__block</code></p>
+<p>没法在Block中改变局部变量的值，编译过程中就报编译错误。错误：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Variable is not assignable(missing __block type specifier)</span><br></pre></td></tr></table></figure>
+<p>因为局部变量是在执行Block语法的时候，被block捕获成为Block的结构体实例中，但是Block仅仅捕获了val的值，并没有捕获val的内存地址，所以在Block内部是无法修改自动变量的值。</p>
+<p><code>_block</code>修饰自动变量后，<code>_block</code>的变量也被转化成了一个结构体:<code>__Block_byref_i_0</code>,这个结构体有5个成员变量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">struct __Block_byref_i_0 &#123;</span><br><span class="line">	void *__isa;   指针</span><br><span class="line">	__Block_byref_i_0 *__forwarding; 指向自身类型的	__forwarding指针</span><br><span class="line">	int __flags; 标记flag</span><br><span class="line">	int __size;大小</span><br><span class="line">	int i; 变量值</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>MRC环境下，只有copy，<code>_block</code>才会被复制到堆上，否则，<code>_block</code>一直都在栈上，block也只是 <code>_NSStackBlock</code>，这个时候<code>_forwarding</code>指针就只指向自己了。</p>
+<p>ARC环境下，一旦Block赋值就会触发copy，<code>_block</code>就会copy到堆上，Block也是<code>_NSMallocBlock</code>。ARC环境下也是存在<code>_NSStackBlock</code>的时候，这种情况下，<code>_block</code>就在栈上</p>
+<p><code>weakSelf</code>，<code>StrongSelf</code></p>
+<p><code>weakSelf</code>是为了解决循环引用的问题。一定要分析清楚哪里出现了循环引用，只需要把其中一环加上weakSelf这类似的宏，就可以解决循环引用。_weak的实现原理，在原对象释放之后，_weak对象就会变成null，防止野指针。所以就输出了null了。</p>
+<p>那么我们怎么才能在weakSelf之后，block里面还能继续使用weakSelf之后的对象呢？<br>究其根本原因就是weakSelf之后，无法控制什么时候会被释放，为了保证在block内不会被释放，需要添加_strong。</p>
+<p>在block里面使用的_strong修饰的weakSelf是为了在函数生命周期中防止self提前释放。strongSelf是一个自动变量当block执行完毕就会释放自动变量strongSelf不会对self进行一直进行强引用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/面试/" rel="tag"># 面试</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/27/模拟tvOS中的3D浮动效果/" rel="next" title="模拟tvOS中的3D浮动效果">
+                <i class="fa fa-chevron-left"></i> 模拟tvOS中的3D浮动效果
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2017/11/28/面试问题总结/"
+           data-title="面试问题总结" data-url="http://www.521ios.com/2017/11/28/面试问题总结/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg"
+                alt="LiuXin" />
+            
+              <p class="site-author-name" itemprop="name">LiuXin</p>
+              <p class="site-description motion-element" itemprop="description">编程如逆水行舟，不进则退</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础类"><span class="nav-number">1.</span> <span class="nav-text">基础类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ARC下的assign和weak区别"><span class="nav-number">1.1.</span> <span class="nav-text">1 ARC下的assign和weak区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-NSString到底使用Copy还是使用Strong属性，有什么区别"><span class="nav-number">1.2.</span> <span class="nav-text">2 NSString到底使用Copy还是使用Strong属性，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-block为什么要用copy"><span class="nav-number">1.3.</span> <span class="nav-text">3 block为什么要用copy?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-如何让自定义对象支持-copy-操作？"><span class="nav-number">1.4.</span> <span class="nav-text">4 如何让自定义对象支持 copy 操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Delegate，Notification，KVO优缺点"><span class="nav-number">1.5.</span> <span class="nav-text">5 Delegate，Notification，KVO优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-block的-block和weakSelf-StrongSelf"><span class="nav-number">1.6.</span> <span class="nav-text">6 block的__block和weakSelf,StrongSelf</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuXin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"liuxinzkj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
