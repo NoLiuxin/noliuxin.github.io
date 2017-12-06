@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="你的激情被狗吃了吗">
 <meta property="og:description" content="使用KVO 能帮助我们让视图和模型保持同步。控制器可以观察视图依赖的属性变化。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-06T07:09:48.633Z">
+<meta property="og:updated_time" content="2017-12-06T07:12:35.958Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="KVO使用和底层实现原理">
 <meta name="twitter:description" content="使用KVO 能帮助我们让视图和模型保持同步。控制器可以观察视图依赖的属性变化。">
@@ -376,7 +376,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (IBAction)updateRedSlider:(UISlider *)sender &#123;</span><br><span class="line">    self.labColor.lComponent = sender.value;</span><br><span class="line">&#125;</span><br><span class="line">- (IBAction)updateGreenSlider:(UISlider *)sender &#123;</span><br><span class="line">    self.labColor.aComponent = sender.value;</span><br><span class="line">&#125;</span><br><span class="line">- (IBAction)updateBlueSlider:(UISlider *)sender &#123;</span><br><span class="line">    self.labColor.bComponent = sender.value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>移除观察者</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc &#123;</span><br><span class="line">    //在对象被释放时移除观察者，否则会出现BUG</span><br><span class="line">    [self.labColor removeObserver:self forKeyPath:@&quot;color&quot;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><a href="!https://github.com/NoLiuxin/TestKVODemo">Demo地址</a></p>
+<p><a href="https://github.com/NoLiuxin/TestKVODemo" target="_blank" rel="noopener">Demo地址</a></p>
 
       
     </div>
