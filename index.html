@@ -272,6 +272,150 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/12/08/NSDictionary实现原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuXin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="你的激情被狗吃了吗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/08/NSDictionary实现原理/" itemprop="url">NSDictionary实现原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-08T13:28:33+08:00">
+                2017-12-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/08/NSDictionary实现原理/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/08/NSDictionary实现原理/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>NSDictionary（字典）是使用 哈希表来实现key和value之间的映射和存储的， hash函数设计的好坏影响着数据的查找访问效率。数据在hash表中分布的越均匀，其访问效率越高。而在Objective-C中，通常都是利用NSString 来作为键值，其内部使用的hash函数也是通过使用 NSString对象作为键值来保证数据的各个节点在hash表中均匀分布。<br>见NSDictionary中最常用的一个方法原型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (void)setObject:(id)anObject forKey:(id &lt;NSCopying&gt;)aKey;</span><br></pre></td></tr></table></figure>
+<p>NSDictionary中的key是唯一的，key可以是遵循<code>NSCopying</code> 协议和重载<code>- (NSUInteger)hash;</code>、<code>- (BOOL)isEqual:(id)object;</code>方法的任何对象。也就是说在NSDictionary内部，会对 <code>aKey</code> 对象 <code>copy</code> 一份新的。而 <code>anObject</code> 对象在其内部是作为强引用（retain或strong)。</p>
+<p><code>hash</code> 方法是用来计算该对象的 <code>hash</code> 值，最终的 <code>hash</code> 值决定了该对象在 <code>hash</code> 表中存储的位置。所以同样，如果想重写该方法，我们尽量设计一个能让数据分布均匀的 <code>hash</code> 函数。<br><code>isEqual :</code> 方法是为了通过 <code>hash</code> 值来找到 对象 在<code>hash</code>表中的位置。</p>
+<p>在调用<code>setObject: forKey:</code> 后，内部会去调用 <code>key</code> 对象的 <code>hash</code> 方法确定 <code>object</code> 在<code>hash</code>表内的入口位置，然后会调用 <code>isEqual :</code> 来确定该值是否已经存在于 <code>NSDictionary</code>中。</p>
+<p>补充一个小知识：iOS setValue和setObject的区别：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (void)setObject:(ObjectType)anObject forKey:(KeyType &lt;NSCopying&gt;)aKey;</span><br><span class="line">- (void)setValue:(nullable ObjectType)value forKey:(NSString *)key;</span><br></pre></td></tr></table></figure>
+<p>首先：<code>setObject: ForKey:</code>是NSMutableDictionary特有的；<code>setValue: ForKey:</code>是KVC的主要方法。</p>
+<p>区别：</p>
+<blockquote>
+<p>(1) <code>setValue: ForKey:</code>的value是可以为nil的（但是当value为nil的时候，会自动调用<code>removeObject：forKey</code>方法）；</p>
+<p><code>setObject: ForKey:</code>的value则不可以为nil。</p>
+<p>(2) <code>setValue: ForKey:</code>的key必须是不为nil的字符串类型；</p>
+<p><code>setObject: ForKey:</code>的key可以是不为nil的所有继承NSCopying的类型。</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/12/06/KVO使用和底层实现原理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1483,136 +1627,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/11/27/UILabel在设置了行间距和字间距后计算高度/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuXin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="你的激情被狗吃了吗">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/27/UILabel在设置了行间距和字间距后计算高度/" itemprop="url">UILabel在设置了行间距和字间距后计算高度</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-27T14:38:00+08:00">
-                2017-11-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/11/27/UILabel在设置了行间距和字间距后计算高度/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/27/UILabel在设置了行间距和字间距后计算高度/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (CGFloat)textHeightFromTextString:(NSString *)text width:(CGFloat)textWidth fontSize:(CGFloat)textSize &#123;</span><br><span class="line">    </span><br><span class="line">    //设置行间距</span><br><span class="line">    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];</span><br><span class="line">    [paragraphStyle setLineSpacing:3];</span><br><span class="line">    </span><br><span class="line">    //把行间距和字间距加入高度计算的方法</span><br><span class="line">    NSDictionary*attrs =@&#123;NSFontAttributeName: [UIFont systemFontOfSize:textSize],NSParagraphStyleAttributeName:paragraphStyle,NSKernAttributeName:@1.5f&#125;;</span><br><span class="line">    </span><br><span class="line">    CGRect rect = [text boundingRectWithSize:CGSizeMake(textWidth, MAXFLOAT) options:NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesFontLeading|NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingTruncatesLastVisibleLine attributes:attrs context:nil];</span><br><span class="line">    </span><br><span class="line">    //返回计算出的行高</span><br><span class="line">    return ceilf(rect.size.height);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">UILabel *msgLab = [[UILabel alloc] initWithFrame:CGRectMake(15, 10, frame.size.width-30, 100)];</span><br><span class="line">        msgLab.backgroundColor = [UIColor clearColor];</span><br><span class="line">msgLab.textColor = [[UIColor whiteColor] colorWithAlphaComponent:.8]; </span><br><span class="line">msgLab.numberOfLines = 0;</span><br><span class="line">        msgLab.lineBreakMode = NSLineBreakByWordWrapping;</span><br><span class="line">        NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:[bannerDic objectForKey:@&quot;msgText&quot;]];</span><br><span class="line">        </span><br><span class="line">        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];</span><br><span class="line">        [paragraphStyle setLineSpacing:3];//调整行间距</span><br><span class="line">        //这个设置在字体无法显示时一省略号表示</span><br><span class="line">        paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;</span><br><span class="line">        </span><br><span class="line">        [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, [attributedString length])];</span><br><span class="line">        </span><br><span class="line">        [attributedString addAttribute:NSFontAttributeName value:msgFont range:NSMakeRange(0, attributedString.length)];</span><br><span class="line">        msgLab.attributedText = attributedString;</span><br><span class="line">        [self addSubview:msgLab];</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1667,7 +1681,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1680,7 +1694,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
