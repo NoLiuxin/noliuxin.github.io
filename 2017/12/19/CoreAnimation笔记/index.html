@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Core Animation," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="总结一下Core Animation的使用，本文主要借鉴了这篇博客博客地址 1.简介iOS动画主要是指Core Animation框架。官方使用文档地址为Core Animation Guide。Core Animation是iOS和macOS平台上负责图形渲染与动画的基础框架。Core Animation可以作用与动">
+<meta name="keywords" content="Core Animation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CoreAnimation笔记">
+<meta property="og:url" content="http://www.521ios.com/2017/12/19/CoreAnimation笔记/index.html">
+<meta property="og:site_name" content="你的激情被狗吃了吗">
+<meta property="og:description" content="总结一下Core Animation的使用，本文主要借鉴了这篇博客博客地址 1.简介iOS动画主要是指Core Animation框架。官方使用文档地址为Core Animation Guide。Core Animation是iOS和macOS平台上负责图形渲染与动画的基础框架。Core Animation可以作用与动画视图或者其他可视元素，为你完成了动画所需的大部分绘帧工作。你只需要配置少量的动">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/4635af.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/57ad08.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/675932.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/711a6f.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/869d6e.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/9c3f4e.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/10f6177.gif">
+<meta property="og:image" content="https://miao.su/images/2017/12/19/1186892.gif">
+<meta property="og:updated_time" content="2017-12-19T06:34:48.364Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CoreAnimation笔记">
+<meta name="twitter:description" content="总结一下Core Animation的使用，本文主要借鉴了这篇博客博客地址 1.简介iOS动画主要是指Core Animation框架。官方使用文档地址为Core Animation Guide。Core Animation是iOS和macOS平台上负责图形渲染与动画的基础框架。Core Animation可以作用与动画视图或者其他可视元素，为你完成了动画所需的大部分绘帧工作。你只需要配置少量的动">
+<meta name="twitter:image" content="https://miao.su/images/2017/12/19/4635af.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.521ios.com/2017/12/19/CoreAnimation笔记/"/>
+
+
+
+
+
+  <title>CoreAnimation笔记 | 你的激情被狗吃了吗</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">你的激情被狗吃了吗</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">编程如逆水行舟，不进则退</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'F5xiKFBwG7sVaW7jqsDZ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/12/19/CoreAnimation笔记/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuXin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="你的激情被狗吃了吗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CoreAnimation笔记</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-19T13:20:01+08:00">
+                2017-12-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/19/CoreAnimation笔记/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/19/CoreAnimation笔记/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>总结一下Core Animation的使用，本文主要借鉴了这篇博客<br><a href="http://www.jianshu.com/p/dfe084fadfc2" target="_blank" rel="noopener">博客地址</a></p>
+<h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1.简介"></a>1.简介</h2><p>iOS动画主要是指Core Animation框架。<br>官方使用文档地址为<a href="https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html" target="_blank" rel="noopener">Core Animation Guide</a>。<br>Core Animation是iOS和macOS平台上负责图形渲染与动画的基础框架。Core Animation可以作用与动画视图或者其他可视元素，为你完成了动画所需的大部分绘帧工作。你只需要配置少量的动画参数（如开始点的位置和结束点的位置）即可使用Core Animation的动画效果。Core Animation将大部分实际的绘图任务交给了图形硬件来处理，图形硬件会加速图形渲染的速度。这种自动化的图形加速技术让动画拥有更高的帧率并且显示效果更加平滑，不会加重CPU的负担而影响程序的运行速度。</p>
+<a id="more"></a>
+<h2 id="2-Core-Animation动画的使用"><a href="#2-Core-Animation动画的使用" class="headerlink" title="2.Core Animation动画的使用"></a>2.Core Animation动画的使用</h2><h3 id="1-基础动画（CABaseAnimation）"><a href="#1-基础动画（CABaseAnimation）" class="headerlink" title="1.基础动画（CABaseAnimation）"></a>1.基础动画（CABaseAnimation）</h3><p>重要属性<br>fromValue ： keyPath对应的初始值<br>toValue ： keyPath对应的结束值</p>
+<p>基础动画主要提供了对于CALayer对象中的可变属性进行简单动画的操作。比如：位移、透明度、缩放、旋转、背景色等等。<br>效果演示</p>
+<p><img src="https://miao.su/images/2017/12/19/4635af.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<p>位移动画代码演示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//使用CABasicAnimation创建基础动画</span><br><span class="line">   //图层的position属性是一个CGPoint的值，它指定图层相当于它父图层的位置，该值基于父图层的坐标系。</span><br><span class="line">   CABasicAnimation *basicAnimation = [CABasicAnimation animationWithKeyPath:@&quot;position&quot;];</span><br><span class="line">   </span><br><span class="line">   //fromValue ： keyPath对应的初始值</span><br><span class="line">   basicAnimation.fromValue = [NSValue valueWithCGPoint:_testView.center];</span><br><span class="line">   </span><br><span class="line">   //toValue ： keyPath对应的结束值</span><br><span class="line">   basicAnimation.toValue = [NSValue valueWithCGPoint:CGPointMake(SCREEN_WIDTH, _testView.center.y)];</span><br><span class="line">   </span><br><span class="line">   //duration : 动画的持续时间</span><br><span class="line">   basicAnimation.duration = 1.0f;</span><br><span class="line">   </span><br><span class="line">   //如果fillMode=kCAFillModeForwards并且removedOnComletion=NO，那么在动画执行完毕后，图层会保持显示动画执行后的状态。但在实质上，图层的属性值还是动画执行前的初始值，并没有真正被改变。</span><br><span class="line">   //    basicAnimation.fillMode = kCAFillModeForwards;</span><br><span class="line">   //    basicAnimation.removedOnCompletion = NO;</span><br><span class="line">   </span><br><span class="line">   /*timingFunction : 控制动画的显示节奏系统提供五种值选择，分别是：</span><br><span class="line">    *kCAMediaTimingFunctionLinear 线性动画</span><br><span class="line">    *kCAMediaTimingFunctionEaseIn 先慢后快</span><br><span class="line">    *kCAMediaTimingFunctionEaseOut 先快后慢</span><br><span class="line">    *kCAMediaTimingFunctionEaseInEaseOut 先慢后快再慢</span><br><span class="line">    *kCAMediaTimingFunctionDefault 默认，也属于中间比较快</span><br><span class="line">    */</span><br><span class="line">   basicAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];</span><br><span class="line">   [_testView.layer addAnimation:basicAnimation forKey:@&quot;positionAnimation&quot;];</span><br></pre></td></tr></table></figure>
+<h3 id="2-关键帧动画（CAKeyframeAnimation）"><a href="#2-关键帧动画（CAKeyframeAnimation）" class="headerlink" title="2.关键帧动画（CAKeyframeAnimation）"></a>2.关键帧动画（CAKeyframeAnimation）</h3><p>CAKeyframeAnimation和CABaseAnimation都属于CAPropertyAnimatin的子类。</p>
+<p>CABaseAnimation只能从一个数值（fromValue）变换成另一个数值（toValue）,而CAKeyframeAnimation则会使用一个NSArray保存一组关键帧。</p>
+<p>重要属性</p>
+<p>values ： 就是上述的NSArray对象。里面的元素称为”关键帧”(keyframe)。动画对象会在指定的时间(duration)内，依次显示values数组中的每一个关键帧</p>
+<p>path ： 可以设置一个CGPathRef\CGMutablePathRef,让层跟着路径移动。path只对CALayer的anchorPoint和position起作用。如果你设置了path，那么values将被忽略。</p>
+<p>keyTimes ： 可以为对应的关键帧指定对应的时间点,其取值范围为0到1.0,keyTimes中的每一个时间值都对应values中的每一帧.当keyTimes没有设置的时候,各个关键帧的时间是平分的。</p>
+<p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/57ad08.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<p>圆形路径动画代码演示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CAKeyframeAnimation *anima = [CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];</span><br><span class="line">   UIBezierPath *path = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-100, 200, 200)];</span><br><span class="line">   anima.path = path.CGPath;</span><br><span class="line">   anima.duration = 2.0f;</span><br><span class="line">   [_testView.layer addAnimation:anima forKey:@&quot;pathAnimation&quot;];</span><br></pre></td></tr></table></figure>
+<p>说明：CABasicAnimation可看做是最多只有2个关键帧的CAKeyframeAnimation</p>
+<h3 id="3-组动画（CAAnimationGroup）"><a href="#3-组动画（CAAnimationGroup）" class="headerlink" title="3.组动画（CAAnimationGroup）"></a>3.组动画（CAAnimationGroup）</h3><p>CAAnimation的子类，可以保存一组动画对象，将CAAnimationGroup对象加入层后，组中所有动画对象可以同时并发运行。</p>
+<p>重要属性</p>
+<p>animations : 用来保存一组动画对象的NSArray</p>
+<p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/675932.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<p>组动画代码演示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//位移动画</span><br><span class="line">  CAKeyframeAnimation *anima1 = [CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];</span><br><span class="line">  NSValue *value0 = [NSValue valueWithCGPoint:CGPointMake(0, SCREEN_HEIGHT/2-50)];</span><br><span class="line">  NSValue *value1 = [NSValue valueWithCGPoint:CGPointMake(SCREEN_WIDTH/3, SCREEN_HEIGHT/2-50)];</span><br><span class="line">  NSValue *value2 = [NSValue valueWithCGPoint:CGPointMake(SCREEN_WIDTH/3, SCREEN_HEIGHT/2+50)];</span><br><span class="line">  NSValue *value3 = [NSValue valueWithCGPoint:CGPointMake(SCREEN_WIDTH*2/3, SCREEN_HEIGHT/2+50)];</span><br><span class="line">  NSValue *value4 = [NSValue valueWithCGPoint:CGPointMake(SCREEN_WIDTH*2/3, SCREEN_HEIGHT/2-50)];</span><br><span class="line">  NSValue *value5 = [NSValue valueWithCGPoint:CGPointMake(SCREEN_WIDTH, SCREEN_HEIGHT/2-50)];</span><br><span class="line">  anima1.values = [NSArray arrayWithObjects:value0,value1,value2,value3,value4,value5, nil];</span><br><span class="line">  </span><br><span class="line">  //缩放动画</span><br><span class="line">  CABasicAnimation *anima2 = [CABasicAnimation animationWithKeyPath:@&quot;transform.scale&quot;];</span><br><span class="line">  anima2.fromValue = [NSNumber numberWithFloat:0.8f];</span><br><span class="line">  anima2.toValue = [NSNumber numberWithFloat:2.0f];</span><br><span class="line">  </span><br><span class="line">  //旋转动画</span><br><span class="line">  CABasicAnimation *anima3 = [CABasicAnimation animationWithKeyPath:@&quot;transform.rotation&quot;];</span><br><span class="line">  anima3.toValue = [NSNumber numberWithFloat:M_PI*4];</span><br><span class="line">  </span><br><span class="line">  //组动画</span><br><span class="line">  CAAnimationGroup *groupAnimation = [CAAnimationGroup animation];</span><br><span class="line">  groupAnimation.animations = [NSArray arrayWithObjects:anima1,anima2,anima3, nil];</span><br><span class="line">  groupAnimation.duration = 4.0f;</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  [_testView.layer addAnimation:groupAnimation forKey:@&quot;groupAnimation&quot;];</span><br></pre></td></tr></table></figure>
+<h3 id="4-过渡动画（CATransition）"><a href="#4-过渡动画（CATransition）" class="headerlink" title="4.过渡动画（CATransition）"></a>4.过渡动画（CATransition）</h3><p>CAAnimation的子类，用于做过渡动画或者转场动画，能够为层提供移出屏幕和移入屏幕的动画效果。</p>
+<p>重要属性</p>
+<p>type：动画过渡类型</p>
+<p>Apple 官方的SDK其实只提供了四种过渡效果。</p>
+<p>kCATransitionFade 渐变效果</p>
+<p>kCATransitionMoveIn 进入覆盖效果</p>
+<p>kCATransitionPush 推出效果</p>
+<p>kCATransitionReveal 揭露离开效果</p>
+<p>私有API提供了其他很多非常炫的过渡动画，比如@”cube”、@”suckEffect”、@”oglFlip”、 @”rippleEffect”、@”pageCurl”、@”pageUnCurl”、@”cameraIrisHollowOpen”、@”cameraIrisHollowClose”等。</p>
+<p>注意点<br>私有api，不建议开发者们使用。因为苹果公司不提供维护，并且有可能造成你的app审核不通过。</p>
+<p>subtype：动画过渡方向</p>
+<p>kCATransitionFromRight 从右侧进入</p>
+<p>kCATransitionFromLeft 从左侧进入</p>
+<p>kCATransitionFromTop 从顶部进入</p>
+<p>kCATransitionFromBottom 从底部进入</p>
+<p>startProgress：动画起点(在整体动画的百分比)</p>
+<p>endProgress：动画终点(在整体动画的百分比)</p>
+<p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/711a6f.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<h3 id="5-仿射变换（AffineTransform）"><a href="#5-仿射变换（AffineTransform）" class="headerlink" title="5.仿射变换（AffineTransform）"></a>5.仿射变换（AffineTransform）</h3><p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/869d6e.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<p>位移代码示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//CGAffineTransformIdentity是系统提供的一个常量，/* The identity transform: [ 1 0 0 1 0 0 ]. */（和原图一样的transform）;特殊地,transform属性默认值为CGAffineTransformIdentity,可以在形变之后设置该值以还原到最初状态</span><br><span class="line">   </span><br><span class="line">   _demoView.transform = CGAffineTransformIdentity;</span><br><span class="line">   [UIView animateWithDuration:1.0f animations:^&#123;</span><br><span class="line">       //CGAffineTransformMakeTranslation实现以初始位置为基准,在x轴方向上平移x单位,在y轴方向上平移y单位</span><br><span class="line">       // 格式 CGAffineTransformMakeTranslation(CGFloat tx, CGFloat ty)</span><br><span class="line">       //注: 当tx为正值时,会向x轴正方向平移,反之,则向x轴负方向平移;当ty为正值时,会向y轴正方向平移,反之,则向y轴负方向平移</span><br><span class="line">       _demoView.transform = CGAffineTransformMakeTranslation(100, 100);</span><br><span class="line">   &#125;];</span><br></pre></td></tr></table></figure>
+<h3 id="6-综合案例"><a href="#6-综合案例" class="headerlink" title="6.综合案例"></a>6.综合案例</h3><p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/9c3f4e.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<h4 id="1-仿Path菜单效果"><a href="#1-仿Path菜单效果" class="headerlink" title="1.仿Path菜单效果"></a>1.仿Path菜单效果</h4><p>动画解析：<br>1、点击红色按钮，红色按钮旋转。（旋转动画）</p>
+<p>2、黑色小按钮依次弹出，并且带有旋转效果。（位移动画、旋转动画、组动画）</p>
+<p>3、点击黑色小按钮，其他按钮消失，被点击的黑色按钮变大变淡消失。（缩放动画、alpha动画、组动画）</p>
+<p>博主的话：代码过多，这里不做演示。文章最后提供代码下载地址。</p>
+<h4 id="2-仿钉钉菜单效果"><a href="#2-仿钉钉菜单效果" class="headerlink" title="2.仿钉钉菜单效果"></a>2.仿钉钉菜单效果</h4><p>看上去挺炫的，其实实现很简单，就是位移动画+缩放动画。</p>
+<h4 id="3-点赞烟花效果动画"><a href="#3-点赞烟花效果动画" class="headerlink" title="3.点赞烟花效果动画"></a>3.点赞烟花效果动画</h4><p>这里其实只有按钮变大效果使用的缩放动画。烟花效果 使用的是一种比较特殊的动画–粒子动画。</p>
+<p>一个粒子系统一般有两部分组成：</p>
+<p>1、CAEmitterCell：可以看作是单个粒子的原型（例如，一个单一的粉扑在一团烟雾）。当散发出一个粒子，UIKit根据这个发射粒子和定义的基础上创建一个随机粒子。此原型包括一些属性来控制粒子的图片，颜色，方向，运动，缩放比例和生命周期。</p>
+<p>2、CAEmitterLayer：主要控制发射源的位置、尺寸、发射模式、发射源的形状等等。</p>
+<p>以上两个类的属性还是比较多的，这里就不细讲了。大家可以google一下，详细的了解吧。</p>
+<h3 id="7-波浪效果"><a href="#7-波浪效果" class="headerlink" title="7.波浪效果"></a>7.波浪效果</h3><p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/10f6177.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<p>主要是通过正弦函数的算法去画两条错位的线，然后通过CADisplayLink去实时刷新屏幕</p>
+<p>正弦函数算法解析</p>
+<p>正弦型函数解析式：y=Asin（ωx+φ）+h</p>
+<p>各常数值对函数图像的影响：</p>
+<p>φ（初相位）：决定波形与X轴位置关系或横向移动距离（左加右减）</p>
+<p>ω：决定周期（最小正周期T=2π/|ω|）</p>
+<p>A：决定峰值（即纵向拉伸压缩的倍数）</p>
+<p>h：表示波形在Y轴的位置关系或纵向移动距离（上加下减）*/</p>
+<p>1、我们的容器高度是100，我希望波的整体高度，固定在容器的一个相对的位置。这里设置h ＝ 30；也就是说，当Asin（ωx+φ）计算为0的时候，这个时候y的位置是30；</p>
+<p>2、决定波起伏的高度，我们设置波峰是5，波峰越大，曲线越陡峭；</p>
+<p>3、决定波的宽度和周期，比如，我们可以看到上面的例子中是一个周期的波曲线，一个波峰、一个波谷，如果我们想在0到2π这个距离显示2个完整的波曲线，那么周期就是π。我们这里设置波的宽度是容器的宽度_waveWidth，希望能展示2.5个波曲线，周期就是_waveWidth／2.5。那么ω常量就可以这样计算：2.5*M_PI/_waveWidth。</p>
+<p>4、一共有两个波曲线，形成一个落差，也就是设置不同的φ（初相位），我们这里设置落差是M_PI/4。</p>
+<p>5、时间和初相位的函数关系：我们在计时器的函数中一直调用_offset += _speed;可以看到，如果我们设置波的速度speed越大，波的震动将会越快。<br>最后我们的公式如下：</p>
+<p><code>CGFloat y = _waveHeight*sinf(2.5*M_PI*i/_waveWidth + 3*_offset*M_PI/_waveWidth + M_PI/4) + _h;</code></p>
+<p>这些参数都可以自己调整，得到一个符合要求的效果。</p>
+<p>具体代码在文章最后的Demo里面。</p>
+<h3 id="8-自定义过渡动画"><a href="#8-自定义过渡动画" class="headerlink" title="8.自定义过渡动画"></a>8.自定义过渡动画</h3><p>效果演示：</p>
+<p><img src="https://miao.su/images/2017/12/19/1186892.gif" alt="Drawing" width="320px" hight="480
+px"></p>
+<p>要点：</p>
+<p>1.我们需要自定义一个遵循的<code>&lt;UIViewControllerAnimatedTransitioning&gt;</code>协议的动画过渡管理对象，并实现两个必须实现的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//返回动画事件  </span><br><span class="line">- (NSTimeInterval)transitionDuration:(nullable id &lt;UIViewControllerContextTransitioning&gt;)transitionContext;</span><br><span class="line">//所有的过渡动画事务都在这个方法里面完成</span><br><span class="line">- (void)animateTransition:(id &lt;UIViewControllerContextTransitioning&gt;)transitionContext;</span><br></pre></td></tr></table></figure>
+<p>2.我们还需要自定义一个继承于UIPercentDrivenInteractiveTransition的手势过渡管理对象，我把它成为百分比手势过渡管理对象，因为动画的过程是通过百分比控制的</p>
+<p>3.成为相应的代理，实现相应的代理方法，返回我们前两步自定义的对象就OK了 ！</p>
+<p>模态推送需要实现如下4个代理方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//返回一个管理prenent动画过渡的对象</span><br><span class="line"> - (nullable id &lt;UIViewControllerAnimatedTransitioning&gt;)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source;</span><br><span class="line"> //返回一个管理pop动画过渡的对象</span><br><span class="line"> - (nullable id &lt;UIViewControllerAnimatedTransitioning&gt;)animationControllerForDismissedController:(UIViewController *)dismissed;</span><br><span class="line"> //返回一个管理prenent手势过渡的对象</span><br><span class="line"> - (nullable id &lt;UIViewControllerInteractiveTransitioning&gt;)interactionControllerForPresentation:(id &lt;UIViewControllerAnimatedTransitioning&gt;)animator;</span><br><span class="line"> //返回一个管理pop动画过渡的对象</span><br><span class="line"> - (nullable id &lt;UIViewControllerInteractiveTransitioning&gt;)interactionControllerForDismissal:(id &lt;UIViewControllerAnimatedTransitioning&gt;)animator;</span><br></pre></td></tr></table></figure>
+<p>导航控制器实现如下2个代理方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//返回转场动画过渡管理对象</span><br><span class="line"> - (nullable id &lt;UIViewControllerInteractiveTransitioning&gt;)navigationController:(UINavigationController *)navigationController</span><br><span class="line">                   interactionControllerForAnimationController:(id &lt;UIViewControllerAnimatedTransitioning&gt;) animationController NS_AVAILABLE_IOS(7_0);</span><br><span class="line"> //返回手势过渡管理对象</span><br><span class="line"> - (nullable id &lt;UIViewControllerAnimatedTransitioning&gt;)navigationController:(UINavigationController *)navigationController</span><br><span class="line">                            animationControllerForOperation:(UINavigationControllerOperation)operation</span><br><span class="line">                                         fromViewController:(UIViewController *)fromVC</span><br><span class="line">                                           toViewController:(UIViewController *)toVC  NS_AVAILABLE_IOS(7_0);</span><br></pre></td></tr></table></figure>
+<p>我所实现的这个效果大概用了以上的那么多方法，具体还有很多你们可以在看过demo后自行发掘，很好玩。</p>
+<h3 id="9-Demo地址"><a href="#9-Demo地址" class="headerlink" title="9.Demo地址"></a>9.Demo地址</h3><p><a href="https://github.com/NoLiuxin/CoreAnimationDemo" target="_blank" rel="noopener">Demo地址</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Core-Animation/" rel="tag"># Core Animation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/08/NSDictionary实现原理/" rel="next" title="NSDictionary实现原理">
+                <i class="fa fa-chevron-left"></i> NSDictionary实现原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div class="ds-thread" data-thread-key="2017/12/19/CoreAnimation笔记/"
+           data-title="CoreAnimation笔记" data-url="http://www.521ios.com/2017/12/19/CoreAnimation笔记/">
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg"
+                alt="LiuXin" />
+            
+              <p class="site-author-name" itemprop="name">LiuXin</p>
+              <p class="site-description motion-element" itemprop="description">编程如逆水行舟，不进则退</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          <div class="links-of-author motion-element">
+            
+          </div>
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-简介"><span class="nav-number">1.</span> <span class="nav-text">1.简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Core-Animation动画的使用"><span class="nav-number">2.</span> <span class="nav-text">2.Core Animation动画的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基础动画（CABaseAnimation）"><span class="nav-number">2.1.</span> <span class="nav-text">1.基础动画（CABaseAnimation）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-关键帧动画（CAKeyframeAnimation）"><span class="nav-number">2.2.</span> <span class="nav-text">2.关键帧动画（CAKeyframeAnimation）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-组动画（CAAnimationGroup）"><span class="nav-number">2.3.</span> <span class="nav-text">3.组动画（CAAnimationGroup）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-过渡动画（CATransition）"><span class="nav-number">2.4.</span> <span class="nav-text">4.过渡动画（CATransition）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-仿射变换（AffineTransform）"><span class="nav-number">2.5.</span> <span class="nav-text">5.仿射变换（AffineTransform）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-综合案例"><span class="nav-number">2.6.</span> <span class="nav-text">6.综合案例</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-仿Path菜单效果"><span class="nav-number">2.6.1.</span> <span class="nav-text">1.仿Path菜单效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-仿钉钉菜单效果"><span class="nav-number">2.6.2.</span> <span class="nav-text">2.仿钉钉菜单效果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-点赞烟花效果动画"><span class="nav-number">2.6.3.</span> <span class="nav-text">3.点赞烟花效果动画</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-波浪效果"><span class="nav-number">2.7.</span> <span class="nav-text">7.波浪效果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-自定义过渡动画"><span class="nav-number">2.8.</span> <span class="nav-text">8.自定义过渡动画</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-Demo地址"><span class="nav-number">2.9.</span> <span class="nav-text">9.Demo地址</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiuXin</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"liuxinzkj"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
