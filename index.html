@@ -272,6 +272,180 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/12/26/WebViewJavascriptBridge使用和原理剖析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="LiuXin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="你的激情被狗吃了吗">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/12/26/WebViewJavascriptBridge使用和原理剖析/" itemprop="url">WebViewJavascriptBridge使用和原理剖析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-26T18:14:50+08:00">
+                2017-12-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/12/26/WebViewJavascriptBridge使用和原理剖析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/12/26/WebViewJavascriptBridge使用和原理剖析/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><a href="https://github.com/marcuswestin/WebViewJavascriptBridge" target="_blank" rel="noopener">WebViewJavascriptBridge的github地址</a></p>
+<p>###WebViewJavascriptBridge的基本原理</p>
+<p>在WebViewJavascriptBridge.m的文件重写了UIWebView的<code>shouldStartLoadWithRequest:navigationType</code>方法，此方法在html页面的js动作触发时、url变化的时、网页内容变化的时会自动调用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType &#123;</span><br><span class="line">    //判断这个UIWebView是否注册了WebViewJavascriptBridge</span><br><span class="line">    if (webView != _webView) &#123; return YES; &#125;</span><br><span class="line">    //获取请求的URL</span><br><span class="line">    NSURL *url = [request URL];</span><br><span class="line">    __strong WVJB_WEBVIEW_DELEGATE_TYPE* strongDelegate = _webViewDelegate;</span><br><span class="line">    //通过检查scheme和host，就可以清楚的知道，这个请求是不是WebViewJavascriptBridge的重定向请求。</span><br><span class="line">    if ([_base isWebViewJavascriptBridgeURL:url]) &#123;</span><br><span class="line">        //判断URL是否是需要bridge的URL</span><br><span class="line">        if ([_base isBridgeLoadedURL:url]) &#123;</span><br><span class="line">            //通过injectJavascriptFile方法注入JS</span><br><span class="line">            [_base injectJavascriptFile];</span><br><span class="line">        &#125; else if ([_base isQueueMessageURL:url]) &#123;</span><br><span class="line">            //判断URL是否是队列消息，若是，则执行查询命令JS并刷新消息队列</span><br><span class="line">            NSString *messageQueueString = [self _evaluateJavascript:[_base webViewJavascriptFetchQueyCommand]];</span><br><span class="line">            [_base flushMessageQueue:messageQueueString];</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            //URL被识别为未知的消息。</span><br><span class="line">            [_base logUnkownMessage:url];</span><br><span class="line">        &#125;</span><br><span class="line">        return NO;</span><br><span class="line">    &#125; else if (strongDelegate &amp;&amp; [strongDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) &#123;</span><br><span class="line">        return [strongDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>####js调用native方法<br>总结：</p>
+<p>1.首先是在UIViewController 里面实例化 一个bridge     通过bridge 注册一个 handler  然后保存在messageHandlers中  </p>
+<p>2.点击网页的button的时候  把信息保存起来生成一个message 字典 三个key（handlerName ， data，callbackId（后边通过这个来找到之前的responseCallback方法）） 并且把 其中的responseCallback 保存起来，并且改变iframe.src（改变iframe.src会执行<code>shouldStartLoadWithRequest:navigationType</code>方法）</p>
+<p>3.这个时候 webView 执行代理方法，在这里面取出2步存起来的信息  然后给1步的handler中的responseCallback赋值，并且执行 1步注册的方法    </p>
+<p>所以结果就是 执行oc的回调方法  然后在oc的回调方法里面再去执行  刚刚被赋值的 responseCallback方法（这个方法的响应结果体现在web中）至于这个responseCallback被赋值的过程就是通过第二步的callbackId 找到相应的方法赋过去。</p>
+<p>####native调用js方法</p>
+<p>1.如果有callbakId存在  那么就给实现 responseCallback  这个方法（并不调用）</p>
+<p>2  如果message.handlerName存在   那么就取出messageHandlers中 message.handlerName 对应的方法  这个方法一般是在js代码中注册过的。</p>
+<p>注册方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bridge.registerHandler(&apos;testJavascriptHandler&apos;, function(data, responseCallback) &#123;</span><br><span class="line">			log(&apos;ObjC called testJavascriptHandler with&apos;, data)</span><br><span class="line">			var responseData = &#123; &apos;Javascript Says&apos;:&apos;Right back atcha!&apos; &#125;</span><br><span class="line">			log(&apos;JS responding with&apos;, responseData)</span><br><span class="line">			responseCallback(responseData)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>这里最后 如果既有handler 又有callback    就会把第一步实现的方法赋值给handler的 responseCallback      然后在执行到handler的最后一句  responseCallback(responseData)  时候 再执行  执行这个回调。</p>
+<p>###JS端如何使用</p>
+<p>JS端代码，我是直接复制了Demo里面的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">&lt;!doctype html&gt;</span><br><span class="line">&lt;html&gt;&lt;head&gt;</span><br><span class="line">    &lt;meta name=&quot;viewport&quot; content=&quot;user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0&quot;&gt;</span><br><span class="line">	&lt;style type=&apos;text/css&apos;&gt;</span><br><span class="line">		html &#123; font-family:Helvetica; color:#222; &#125;</span><br><span class="line">		h1 &#123; color:steelblue; font-size:24px; margin-top:24px; &#125;</span><br><span class="line">		button &#123; margin:0 3px 10px; font-size:12px; &#125;</span><br><span class="line">		.logLine &#123; border-bottom:1px solid #ccc; padding:4px 2px; font-family:courier; font-size:11px; &#125;</span><br><span class="line">	&lt;/style&gt;</span><br><span class="line">&lt;/head&gt;&lt;body&gt;</span><br><span class="line">	&lt;h1&gt;WebViewJavascriptBridge Demo&lt;/h1&gt;</span><br><span class="line">	&lt;script&gt;</span><br><span class="line">	window.onerror = function(err) &#123;</span><br><span class="line">		log(&apos;window.onerror: &apos; + err)</span><br><span class="line">	&#125;</span><br><span class="line">    &lt;!--这段代码是固定的，必须要放到js中的，应该是js注册WebViewJavascriptBridge的--&gt;</span><br><span class="line">    function setupWebViewJavascriptBridge(callback) &#123;</span><br><span class="line">        if (window.WebViewJavascriptBridge) &#123; return callback(WebViewJavascriptBridge); &#125;</span><br><span class="line">        if (window.WVJBCallbacks) &#123; return window.WVJBCallbacks.push(callback); &#125;</span><br><span class="line">        window.WVJBCallbacks = [callback];</span><br><span class="line">        var WVJBIframe = document.createElement(&apos;iframe&apos;);</span><br><span class="line">        WVJBIframe.style.display = &apos;none&apos;;</span><br><span class="line">        WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;</span><br><span class="line">        document.documentElement.appendChild(WVJBIframe);</span><br><span class="line">        setTimeout(function() &#123; document.documentElement.removeChild(WVJBIframe) &#125;, 0)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    &lt;!--与OC交互的所有JS方法都要放在此处注册，才能调用通过JS调用OC或者让OC调用这里的JS--&gt;</span><br><span class="line">    setupWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">		var uniqueId = 1</span><br><span class="line">		function log(message, data) &#123;</span><br><span class="line">			var log = document.getElementById(&apos;log&apos;)</span><br><span class="line">			var el = document.createElement(&apos;div&apos;)</span><br><span class="line">			el.className = &apos;logLine&apos;</span><br><span class="line">			el.innerHTML = uniqueId++ + &apos;. &apos; + message + &apos;:&lt;br/&gt;&apos; + JSON.stringify(data)</span><br><span class="line">			if (log.children.length) &#123; log.insertBefore(el, log.children[0]) &#125;</span><br><span class="line">			else &#123; log.appendChild(el) &#125;</span><br><span class="line">		&#125;</span><br><span class="line">       &lt;!--JS给ObjC提供公开的API，在ObjC端可以手动调用JS的这个API。接收ObjC传过来的参数，且可以回调ObjC--&gt;</span><br><span class="line">		bridge.registerHandler(&apos;testJavascriptHandler&apos;, function(data, responseCallback) &#123;</span><br><span class="line">			log(&apos;ObjC called testJavascriptHandler with&apos;, data)</span><br><span class="line">			var responseData = &#123; &apos;Javascript Says&apos;:&apos;Right back atcha!&apos; &#125;</span><br><span class="line">			log(&apos;JS responding with&apos;, responseData)</span><br><span class="line">			responseCallback(responseData)</span><br><span class="line">		&#125;)</span><br><span class="line"></span><br><span class="line">		document.body.appendChild(document.createElement(&apos;br&apos;))</span><br><span class="line"></span><br><span class="line">		var callbackButton = document.getElementById(&apos;buttons&apos;).appendChild(document.createElement(&apos;button&apos;))</span><br><span class="line">		callbackButton.innerHTML = &apos;Fire testObjcCallback&apos;</span><br><span class="line">		callbackButton.onclick = function(e) &#123;</span><br><span class="line">			e.preventDefault()</span><br><span class="line">			log(&apos;JS calling handler &quot;testObjcCallback&quot;&apos;)</span><br><span class="line">			&lt;!--我们在这注册一个js调用OC的方法,并携带参数,当OC收到并且回调通知JS--&gt;</span><br><span class="line">			bridge.callHandler(&apos;testObjcCallback&apos;, &#123;&apos;foo&apos;: &apos;bar&apos;&#125;, function(response) &#123;</span><br><span class="line">				log(&apos;JS got response&apos;, response)</span><br><span class="line">			&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;)</span><br><span class="line">	&lt;/script&gt;</span><br><span class="line">	&lt;div id=&apos;buttons&apos;&gt;&lt;/div&gt; &lt;div id=&apos;log&apos;&gt;&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>在JS端，嵌入步骤是：</p>
+<p>第一步：将下面的代码放在JS中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--这段代码是固定的，必须要放到js中的，应该是js注册WebViewJavascriptBridge的--&gt;</span><br><span class="line">   function setupWebViewJavascriptBridge(callback) &#123;</span><br><span class="line">       if (window.WebViewJavascriptBridge) &#123; return callback(WebViewJavascriptBridge); &#125;</span><br><span class="line">       if (window.WVJBCallbacks) &#123; return window.WVJBCallbacks.push(callback); &#125;</span><br><span class="line">       window.WVJBCallbacks = [callback];</span><br><span class="line">       var WVJBIframe = document.createElement(&apos;iframe&apos;);</span><br><span class="line">       WVJBIframe.style.display = &apos;none&apos;;</span><br><span class="line">       WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;</span><br><span class="line">       document.documentElement.appendChild(WVJBIframe);</span><br><span class="line">       setTimeout(function() &#123; document.documentElement.removeChild(WVJBIframe) &#125;, 0)</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码是固定的，必须要放到js中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setupWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">		所有与iOS交互的JS代码放这里！</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>###JS如何调用iOS代码</p>
+<p>通过bridge.callHandler来调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">bridge.callHandler(&apos;testObjcCallback&apos;, &#123;&apos;foo&apos;: &apos;bar&apos;&#125;, function(response) &#123;</span><br><span class="line">		log(&apos;JS got response&apos;, response)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>其中，各参数说明如下：</p>
+<p>testObjcCallback：是iOS端register的handleName，在iOS端注册后，JS就可以直接通过这个handleName与iOS交互。比如，当点击某个按钮时，就执行上面这一段代码，结果就是js端将参数传给了iOS端，iOS端收到参数，然后通过回调给js，js会收到response，然后打印出来。</p>
+<p>{‘foo’: ‘bar’}这是JSON字符串，传到iOS端会被WebViewJavascriptBridge自动转换成id对象，然后在回调处看到的就是字典对象了。</p>
+<p>function(response)这是个js函数，在iOS端收到回调后，拿到了参数，然后通过闭包回调反馈给js端，这个反馈就是通过js函数来传值给js。</p>
+<p>###JS端加入WebViewJavascriptBridge代码注意事项</p>
+<p>如果在下面的函数体内有任何错误，都不会有打印日志，也不会有任何回调：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setupWebViewJavascriptBridge(function(bridge) &#123;</span><br><span class="line">        所有与iOS交互的JS代码放这里！</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>因此，如果遇到什么也没有输出，说明你写错了。另外，上面有demo中，log函数是自定义的，不是系统的，因此如果没有加入这个函数的定义，调用它也会导致不能交互。</p>
+<p>###iOS端如何使用</p>
+<p>第一步：开启日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 开启日志，方便调试</span><br><span class="line">[WebViewJavascriptBridge enableLogging];</span><br></pre></td></tr></table></figure>
+<p>第二步：给ObjC与JS建立桥梁</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 给哪个webview建立JS与OjbC的沟通桥梁</span><br><span class="line">_bridge = [WebViewJavascriptBridge bridgeForWebView:webView];</span><br><span class="line">// 设置代理，如果不需要实现，可以不设置</span><br><span class="line">[_bridge setWebViewDelegate:self];</span><br></pre></td></tr></table></figure>
+<p>第三步：注册HandleName，用于给JS端调用iOS端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// JS主动调用OjbC的方法</span><br><span class="line">// 这是JS会调用testObjcCallback方法，这是OC注册给JS调用的</span><br><span class="line">// JS需要回调，当然JS也可以传参数过来。data就是JS所传的参数，不一定需要传</span><br><span class="line">// OC端通过responseCallback回调JS端，JS就可以得到所需要的数据</span><br><span class="line">[_bridge registerHandler:@&quot;testObjcCallback&quot; handler:^(id data, WVJBResponseCallback responseCallback) &#123;</span><br><span class="line">        NSLog(@&quot;testObjcCallback called: %@&quot;, data);</span><br><span class="line">        // 反馈给JS</span><br><span class="line">        responseCallback(@&quot;Response from testObjcCallback&quot;);</span><br><span class="line">    &#125;];</span><br></pre></td></tr></table></figure>
+<p>第四步：直接调用JS端注册的HandleName</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//需要传给JS端的数据</span><br><span class="line">id data = @&#123; @&quot;greetingFromObjC&quot;: @&quot;Hi there, JS!&quot; &#125;;</span><br><span class="line">// 这是OC会调用JS端写好的方法testJavascriptHandler方法，这是JS注册给OC调用的</span><br><span class="line">//block回调，JS端接收到参数回调给OC，OC端打印</span><br><span class="line">[_bridge callHandler:@&quot;testJavascriptHandler&quot; data:data responseCallback:^(id response) &#123;</span><br><span class="line">        NSLog(@&quot;testJavascriptHandler responded: %@&quot;, response);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>###源代码</p>
+<p>这篇博客用的是GitHub上原版的Demo写的，需要看源码的直接下载官方demo对照着看就可以了。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/12/19/CoreAnimation笔记/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1498,136 +1672,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://www.521ios.com/2017/11/27/iOS的桌面背景运动效果/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="LiuXin">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="http://pic2.52pk.com/files/141002/1283574_134905_7693.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="你的激情被狗吃了吗">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/27/iOS的桌面背景运动效果/" itemprop="url">iOS的桌面背景运动效果</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-27T14:41:00+08:00">
-                2017-11-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/11/27/iOS的桌面背景运动效果/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/11/27/iOS的桌面背景运动效果/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">_backgroundImage = [[UIImageView alloc] initWithFrame:CGRectMake(-50, -50, Screen_width+100, Screen_Height+100)];</span><br><span class="line">    _backgroundImage.image = [UIImage imageNamed:@&quot;bg_1&quot;];</span><br><span class="line">    [self.view addSubview:_backgroundImage];</span><br><span class="line">    </span><br><span class="line">    UIInterpolatingMotionEffect * backEffX = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@&quot;center.x&quot; type:UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];// type表示沿水平方向运行效果</span><br><span class="line">    backEffX.maximumRelativeValue = @(-50);</span><br><span class="line">    backEffX.minimumRelativeValue = @(50);</span><br><span class="line">    [self.backgroundImage addMotionEffect:backEffX];</span><br><span class="line">    </span><br><span class="line">    UIInterpolatingMotionEffect * backEffY = [[UIInterpolatingMotionEffect alloc] initWithKeyPath:@&quot;center.y&quot; type:UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];</span><br><span class="line">    backEffY.maximumRelativeValue = @(-50);</span><br><span class="line">    backEffY.minimumRelativeValue = @(50);</span><br><span class="line">    [self.backgroundImage addMotionEffect:backEffY];</span><br></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1682,7 +1726,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1695,7 +1739,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
