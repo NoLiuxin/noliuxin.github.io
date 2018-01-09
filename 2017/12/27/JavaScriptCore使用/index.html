@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="你的激情被狗吃了吗">
 <meta property="og:description" content="JavaScriptCoreJavaScriptCore是webkit的一个重要组成部分，主要是对JS进行解析和提供执行环境。代码是开源的，可以下下来看看（源码）。iOS7后苹果在iPhone平台推出，极大的方便了我们对js的操作。我们可以脱离webview直接运行我们的js。iOS7以前我们对JS的操作只有webview里面一个函数 stringByEvaluatingJavaScriptFro">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-01-09T08:36:59.120Z">
+<meta property="og:updated_time" content="2018-01-09T08:38:37.948Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="JavaScriptCore使用">
 <meta name="twitter:description" content="JavaScriptCoreJavaScriptCore是webkit的一个重要组成部分，主要是对JS进行解析和提供执行环境。代码是开源的，可以下下来看看（源码）。iOS7后苹果在iPhone平台推出，极大的方便了我们对js的操作。我们可以脱离webview直接运行我们的js。iOS7以前我们对JS的操作只有webview里面一个函数 stringByEvaluatingJavaScriptFro">
@@ -351,6 +351,7 @@
 
       
         <h3 id="JavaScriptCore"><a href="#JavaScriptCore" class="headerlink" title="JavaScriptCore"></a>JavaScriptCore</h3><p>JavaScriptCore是webkit的一个重要组成部分，主要是对JS进行解析和提供执行环境。代码是开源的，可以下下来看看<a href="https://github.com/phoboslab/JavaScriptCore-iOS" target="_blank" rel="noopener">（源码）</a>。iOS7后苹果在iPhone平台推出，极大的方便了我们对js的操作。我们可以脱离webview直接运行我们的js。iOS7以前我们对JS的操作只有webview里面一个函数 stringByEvaluatingJavaScriptFromString，JS对OC的回调都是基于URL的拦截进行的操作。大家用得比较多的是<a href="https://github.com/marcuswestin/WebViewJavascriptBridge" target="_blank" rel="noopener">WebViewJavascriptBridge</a>和<a href="https://github.com/dukeland/EasyJSWebView" target="_blank" rel="noopener">EasyJSWebView</a>这两个开源库，很多混合都采用的这种方式。</p>
+<a id="more"></a>
 <p>JavaScriptCore和我们相关的类不是很多，使用起来也非常简单。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">#import &quot;JSContext.h&quot;</span><br><span class="line">#import &quot;JSValue.h&quot;</span><br><span class="line">#import &quot;JSManagedValue.h&quot;</span><br><span class="line">#import &quot;JSVirtualMachine.h&quot;</span><br><span class="line">#import &quot;JSExport.h&quot;</span><br></pre></td></tr></table></figure>
 <h3 id="JSContext"><a href="#JSContext" class="headerlink" title="JSContext"></a>JSContext</h3><p>JSContext 是JS代码的执行环境</p>
