@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="你的激情被狗吃了吗">
 <meta property="og:description" content="基础类1 ARC下的assign和weak区别weak 比 assign 多了一个功能就是当属性所指向的对象消失的时（也就是内存引用计数为0）会自动赋值为 nil ，这样再向 weak 修饰的属性发送消息就不会导致野指针操作crash。 结论：在 ARC 模式下编程时，指针变量一定要用 weak 修饰，只有基本数据类型和结构体需要用 assgin ，例如 delegate ，一定要用 weak 修">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-11-28T05:51:39.506Z">
+<meta property="og:updated_time" content="2018-03-04T04:42:53.379Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="面试问题总结">
 <meta name="twitter:description" content="基础类1 ARC下的assign和weak区别weak 比 assign 多了一个功能就是当属性所指向的对象消失的时（也就是内存引用计数为0）会自动赋值为 nil ，这样再向 weak 修饰的属性发送消息就不会导致野指针操作crash。 结论：在 ARC 模式下编程时，指针变量一定要用 weak 修饰，只有基本数据类型和结构体需要用 assgin ，例如 delegate ，一定要用 weak 修">
@@ -410,6 +410,21 @@
 <p><code>weakSelf</code>是为了解决循环引用的问题。一定要分析清楚哪里出现了循环引用，只需要把其中一环加上weakSelf这类似的宏，就可以解决循环引用。_weak的实现原理，在原对象释放之后，_weak对象就会变成null，防止野指针。所以就输出了null了。</p>
 <p>那么我们怎么才能在weakSelf之后，block里面还能继续使用weakSelf之后的对象呢？<br>究其根本原因就是weakSelf之后，无法控制什么时候会被释放，为了保证在block内不会被释放，需要添加_strong。</p>
 <p>在block里面使用的_strong修饰的weakSelf是为了在函数生命周期中防止self提前释放。strongSelf是一个自动变量当block执行完毕就会释放自动变量strongSelf不会对self进行一直进行强引用。</p>
+<h3 id="7-arc下，不显示指定任何属性关键字时，默认的关键字都有哪些"><a href="#7-arc下，不显示指定任何属性关键字时，默认的关键字都有哪些" class="headerlink" title="7 arc下，不显示指定任何属性关键字时，默认的关键字都有哪些"></a>7 arc下，不显示指定任何属性关键字时，默认的关键字都有哪些</h3><p>1.对应基本数据类型默认关键字是 atomic,readwrite,assign</p>
+<p>2.对于普通的 Objective-C 对象 atomic,readwrite,strong</p>
+<h3 id="8-iOS开发中nil、Nil、NULL和-NSNull-null-的区别"><a href="#8-iOS开发中nil、Nil、NULL和-NSNull-null-的区别" class="headerlink" title="8 iOS开发中nil、Nil、NULL和[NSNull null]的区别"></a>8 iOS开发中nil、Nil、NULL和[NSNull null]的区别</h3><p>nil：当一个对象置为nil时，这个对象的内存地址就会被系统收回。置空之后是不能进行retain，copy等跟引用计数有关的任何操作的。</p>
+<p>Nil：nil完全等同于Nil，只不过由于编程习惯，人们一般把对象置空用nil，把类置空用Nil。</p>
+<p>NULL：这个是从C语言继承来的，就是一个简单的空指针。</p>
+<p>[NSNull null]：[NSNull null]和nil的区别在于，nil是一个空对象，已经完全从内存中消失了，而如果我们想表达“我们需要有这样一个容器，但这个容器里什么也没有”的观念时，我们就用到[NSNull null]，它就是为“值为空的对象”。如果你查阅开发文档你会发现NSNull这个类是继承NSObject，并且只有一个“+ (NSNull *) null；”类方法。这就说明NSNull对象拥有一个有效的内存地址，所以在程序中对它的任何引用都是不会导致程序崩溃的。</p>
+<h3 id="9-category，protocol，delegate，extension"><a href="#9-category，protocol，delegate，extension" class="headerlink" title="9 category，protocol，delegate，extension"></a>9 category，protocol，delegate，extension</h3><p>category:类别，是一种为现有的类添加新方法的方式,可以为任何类添加category，哪怕是那些没有源码的类。注意: 无法向category中添加新的实例变量，运行时报错。可以用rumtime解决。当category中方法名与现有类名重名时，类别具有更高的优先级，将取代现有的方法。<br>NSString+NumberConvience.h</p>
+<p>protocol:协议是一个方法签名列表，其中定义了若干个方法，@required这是委托对象必须实现的，@optional这是可选的。</p>
+<p>delegate: 委托是一种对象，是实现协议的对象。比如类B设置了类A的delegate对象为其自身，那么类B就要实现类A中制定的某些方法。协议和代理在iOS中是配合使用的。</p>
+<p>extension: 扩展可以理解成是没有名字的分类，扩展可以添加属性，成员变量，方法名称。类扩展写在.m中，这些内容就都是私有的了，只有本类才可见。</p>
+<h3 id="10-CALayer-和-UIView-的区别和联系"><a href="#10-CALayer-和-UIView-的区别和联系" class="headerlink" title="10 CALayer 和 UIView 的区别和联系"></a>10 CALayer 和 UIView 的区别和联系</h3><p>1.首先UIView可以响应事件，Layer不可以。</p>
+<p>2.View和CALayer的Frame映射及View如何创建CALayer。一个 Layer 的 frame 是由它的 anchorPoint,position,bounds,和 transform 共同决定的，而一个 View 的 frame 只是简单的返回 Layer的 frame，同样 View 的 center和 bounds 也是返回 Layer 的一些属性。</p>
+<p>3.UIView主要是对显示内容的管理而 CALayer 主要侧重显示内容的绘制。</p>
+<p>4.在做 iOS 动画的时候，修改非 RootLayer的属性（譬如位置、背景色等）会默认产生隐式动画，而修改UIView则不会。</p>
+<h3 id="11-简述UIButton的继承关系"><a href="#11-简述UIButton的继承关系" class="headerlink" title="11 简述UIButton的继承关系"></a>11 简述UIButton的继承关系</h3><p>UIButton的父类是UIControl,UIControl的父类是UIView，UIView的父类是UIResponder</p>
 
       
     </div>
@@ -588,7 +603,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础类"><span class="nav-number">1.</span> <span class="nav-text">基础类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ARC下的assign和weak区别"><span class="nav-number">1.1.</span> <span class="nav-text">1 ARC下的assign和weak区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-NSString到底使用Copy还是使用Strong属性，有什么区别"><span class="nav-number">1.2.</span> <span class="nav-text">2 NSString到底使用Copy还是使用Strong属性，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-block为什么要用copy"><span class="nav-number">1.3.</span> <span class="nav-text">3 block为什么要用copy?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-如何让自定义对象支持-copy-操作？"><span class="nav-number">1.4.</span> <span class="nav-text">4 如何让自定义对象支持 copy 操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Delegate，Notification，KVO优缺点"><span class="nav-number">1.5.</span> <span class="nav-text">5 Delegate，Notification，KVO优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-block的-block和weakSelf-StrongSelf"><span class="nav-number">1.6.</span> <span class="nav-text">6 block的__block和weakSelf,StrongSelf</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础类"><span class="nav-number">1.</span> <span class="nav-text">基础类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ARC下的assign和weak区别"><span class="nav-number">1.1.</span> <span class="nav-text">1 ARC下的assign和weak区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-NSString到底使用Copy还是使用Strong属性，有什么区别"><span class="nav-number">1.2.</span> <span class="nav-text">2 NSString到底使用Copy还是使用Strong属性，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-block为什么要用copy"><span class="nav-number">1.3.</span> <span class="nav-text">3 block为什么要用copy?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-如何让自定义对象支持-copy-操作？"><span class="nav-number">1.4.</span> <span class="nav-text">4 如何让自定义对象支持 copy 操作？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-Delegate，Notification，KVO优缺点"><span class="nav-number">1.5.</span> <span class="nav-text">5 Delegate，Notification，KVO优缺点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-block的-block和weakSelf-StrongSelf"><span class="nav-number">1.6.</span> <span class="nav-text">6 block的__block和weakSelf,StrongSelf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-arc下，不显示指定任何属性关键字时，默认的关键字都有哪些"><span class="nav-number">1.7.</span> <span class="nav-text">7 arc下，不显示指定任何属性关键字时，默认的关键字都有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-iOS开发中nil、Nil、NULL和-NSNull-null-的区别"><span class="nav-number">1.8.</span> <span class="nav-text">8 iOS开发中nil、Nil、NULL和[NSNull null]的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-category，protocol，delegate，extension"><span class="nav-number">1.9.</span> <span class="nav-text">9 category，protocol，delegate，extension</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-CALayer-和-UIView-的区别和联系"><span class="nav-number">1.10.</span> <span class="nav-text">10 CALayer 和 UIView 的区别和联系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-简述UIButton的继承关系"><span class="nav-number">1.11.</span> <span class="nav-text">11 简述UIButton的继承关系</span></a></li></ol></li></ol></div>
             
 
           </div>
