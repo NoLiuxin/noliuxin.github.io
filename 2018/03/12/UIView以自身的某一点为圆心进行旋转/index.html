@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于transform.rotation.z为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。 anchorPoint什么是anchorPoint，从一个例子开始入手吧，想象一下，把一">
+<meta name="description" content="最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于transform.rotation.z为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。">
 <meta name="keywords" content="anchorPoint,position">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UIView以自身的某一点为圆心进行旋转">
 <meta property="og:url" content="http://www.521ios.com/2018/03/12/UIView以自身的某一点为圆心进行旋转/index.html">
 <meta property="og:site_name" content="你的激情被狗吃了吗">
-<meta property="og:description" content="最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于transform.rotation.z为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。 anchorPoint什么是anchorPoint，从一个例子开始入手吧，想象一下，把一张A4白纸用图钉订在书桌上，如果订得不是很紧的话，白纸就可以沿顺时针或逆时针方向">
+<meta property="og:description" content="最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于transform.rotation.z为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://img1.tuicool.com/QzAreq.png!web">
-<meta property="og:image" content="https://img0.tuicool.com/mUvIfi.jpg!web">
-<meta property="og:updated_time" content="2018-03-12T12:48:44.936Z">
+<meta property="og:image" content="https://img1.tuicool.com/QzAreq.png">
+<meta property="og:image" content="https://img0.tuicool.com/mUvIfi.jpg">
+<meta property="og:updated_time" content="2018-03-12T12:55:03.905Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UIView以自身的某一点为圆心进行旋转">
-<meta name="twitter:description" content="最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于transform.rotation.z为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。 anchorPoint什么是anchorPoint，从一个例子开始入手吧，想象一下，把一张A4白纸用图钉订在书桌上，如果订得不是很紧的话，白纸就可以沿顺时针或逆时针方向">
-<meta name="twitter:image" content="https://img1.tuicool.com/QzAreq.png!web">
+<meta name="twitter:description" content="最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于transform.rotation.z为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。">
+<meta name="twitter:image" content="https://img1.tuicool.com/QzAreq.png">
 
 
 
@@ -354,14 +354,15 @@
 
       
         <p>最近面试的时候被问到了如何以某个View上的某一个点为圆心进行动画旋转，因为一般处理View的旋转的动画的时候都是基于<code>transform.rotation.z</code>为圆心进行旋转的，查了资料总结出了实现任意点为圆心的旋转方式，内容如下。</p>
+<a id="more"></a>
 <h3 id="anchorPoint"><a href="#anchorPoint" class="headerlink" title="anchorPoint"></a>anchorPoint</h3><p>什么是anchorPoint，从一个例子开始入手吧，想象一下，把一张A4白纸用图钉订在书桌上，如果订得不是很紧的话，白纸就可以沿顺时针或逆时针方向围绕图钉旋转，这时候图钉就起着支点的作用。我们要解释的anchorPoint就相当于白纸上的图钉，它主要的作用就是用来作为变换的支点，旋转就是一种变换，类似的还有平移、缩放。</p>
 <p>继续扩展，很明显，白纸的旋转形态随图钉的位置不同而不同，图钉订在白纸的正中间与左上角时分别造就了两种旋转形态，这是由图钉（anchorPoint）的位置决定的。如何衡量图钉（anchorPoint）在白纸中的位置呢？在iOS中，anchorPoint点的值是用一种相对bounds的比例值来确定的，在白纸的左上角、右下角，anchorPoint分为为(0,0), (1, 1)，也就是说anchorPoint是在单元坐标空间(同时也是左手坐标系)中定义的。类似地，可以得出在白纸的中心点、左下角和右上角的anchorPoint为(0.5,0.5), (0,1), (1,0)。</p>
 <p>然后再来看下面两张图，注意图中分iOS与MacOS，因为两者的坐标系不相同，iOS使用左手坐标系，坐标原点在左上角，MacOS使用右手坐标系，原点在左下角，我们看iOS部分即可。 </p>
 <p>图一</p>
-<p><img src="https://img1.tuicool.com/QzAreq.png!web" alt="Drawing" width="550px" hight="608
+<p><img src="https://img1.tuicool.com/QzAreq.png" alt="Drawing" width="550px" hight="608
 px"></p>
 <p>图二</p>
-<p><img src="https://img0.tuicool.com/mUvIfi.jpg!web" alt="Drawing" width="550px" hight="608
+<p><img src="https://img0.tuicool.com/mUvIfi.jpg" alt="Drawing" width="550px" hight="608
 px"></p>
 <p>像UIView有superView与subView的概念一样，CALayer也有superLayer与layer的概念，前面说到的白纸和图中的矩形可以理解为layer，书桌和图中矩形以外的坐标系可以理解成superLayer。如果各自以左上角为原点，则在图中有相对的两个坐标空间。</p>
 <h3 id="position"><a href="#position" class="headerlink" title="position"></a>position</h3><p>在图1中，anchorPoint有(0.5,0.5)和(0,0)两种情况，分别为矩形的中心点与原点。那么，这两个anchorPoint在superLayer中的实际位置分别为多少呢？简单计算一下就可以得到(100, 100)和(40, 60)，把这两个值分别与各自的position值比较，发现完全一致，该不会是巧合？</p>
